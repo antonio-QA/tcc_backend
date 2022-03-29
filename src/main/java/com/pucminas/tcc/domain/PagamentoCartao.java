@@ -2,7 +2,7 @@ package com.pucminas.tcc.domain;
 
 import javax.persistence.Entity;
 
-import com.pucminas.tcc.domain.enuns.EstadoPagamento;
+import com.pucminas.tcc.domain.enums.EstadoPagamento;
 
 @Entity
 public class PagamentoCartao extends Pagamento {
@@ -15,7 +15,7 @@ public class PagamentoCartao extends Pagamento {
 	}
 
 	public PagamentoCartao(Integer id, EstadoPagamento estado, Pedido pedido, Integer numeroParcelas) {
-		super();
+		super(id, estado, pedido);
 		this.numeroParcelas = numeroParcelas;
 	}
 	

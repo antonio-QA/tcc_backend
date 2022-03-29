@@ -15,7 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.pucminas.tcc.domain.enuns.TipoCliente;
+import com.pucminas.tcc.domain.enums.TipoCliente;
 
 @Entity
 public class Cliente implements Serializable {

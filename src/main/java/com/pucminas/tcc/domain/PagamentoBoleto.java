@@ -4,7 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 
-import com.pucminas.tcc.domain.enuns.EstadoPagamento;
+import com.pucminas.tcc.domain.enums.EstadoPagamento;
 
 @Entity
 public class PagamentoBoleto extends Pagamento {

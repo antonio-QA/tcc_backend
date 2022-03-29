@@ -81,7 +81,7 @@ public class Pedido implements Serializable {
 		return enderecoEntrega;
 	}
 
-	public void setEnderecoDeEntrega(Endereco enderecoEntrega) {
+	public void setEnderecoEntrega(Endereco enderecoEntrega) {
 		this.enderecoEntrega = enderecoEntrega;
 	}
 	
