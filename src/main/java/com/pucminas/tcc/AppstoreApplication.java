@@ -13,6 +13,7 @@ import com.pucminas.tcc.domain.Cidade;
 import com.pucminas.tcc.domain.Cliente;
 import com.pucminas.tcc.domain.Endereco;
 import com.pucminas.tcc.domain.Estado;
+import com.pucminas.tcc.domain.ItemPedido;
 import com.pucminas.tcc.domain.Pagamento;
 import com.pucminas.tcc.domain.PagamentoBoleto;
 import com.pucminas.tcc.domain.PagamentoCartao;
@@ -25,6 +26,7 @@ import com.pucminas.tcc.repositories.CidadeRepository;
 import com.pucminas.tcc.repositories.ClienteRepository;
 import com.pucminas.tcc.repositories.EnderecoRepository;
 import com.pucminas.tcc.repositories.EstadoRepository;
+import com.pucminas.tcc.repositories.ItemPedidoRepository;
 import com.pucminas.tcc.repositories.PagamentoRepository;
 import com.pucminas.tcc.repositories.PedidoRepository;
 import com.pucminas.tcc.repositories.ProdutoRepository;
@@ -55,6 +57,9 @@ public class AppstoreApplication implements CommandLineRunner {
 	
 	@Autowired
 	private PagamentoRepository pagamentoRepository;
+	
+	@Autowired
+	private ItemPedidoRepository itemPedidoRepository;
 
 	
 	public static void main(String[] args) {
@@ -124,6 +129,19 @@ public class AppstoreApplication implements CommandLineRunner {
 		
 		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
 		pagamentoRepository.saveAll(Arrays.asList(pgto1, pgto2));
+		
+		ItemPedido ip1 = new ItemPedido(ped1, p1, 0.00, 1, 7000.00);
+		ItemPedido ip2 = new ItemPedido(ped1, p3, 0.00, 2, 150.00);
+		ItemPedido ip3 = new ItemPedido(ped2, p2, 100.00, 1, 850.00);
+		
+		ped1.getItens().addAll(Arrays.asList(ip1, ip2));
+		ped2.getItens().addAll(Arrays.asList(ip3));
+		
+		p1.getItens().addAll(Arrays.asList(ip1));
+		p2.getItens().addAll(Arrays.asList(ip3));
+		p3.getItens().addAll(Arrays.asList(ip2));
+		
+		itemPedidoRepository.saveAll(Arrays.asList(ip1, ip2, ip3));
 		
 	}
 
