@@ -1,5 +1,6 @@
 package com.pucminas.tcc.services;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,21 +11,29 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.pucminas.tcc.domain.Cidade;
 import com.pucminas.tcc.domain.Cliente;
 import com.pucminas.tcc.domain.Endereco;
+import com.pucminas.tcc.domain.enums.Perfil;
 import com.pucminas.tcc.domain.enums.TipoCliente;
 import com.pucminas.tcc.dto.ClienteDTO;
 import com.pucminas.tcc.dto.ClienteNewDTO;
 import com.pucminas.tcc.repositories.ClienteRepository;
 import com.pucminas.tcc.repositories.EnderecoRepository;
+import com.pucminas.tcc.security.UserSecurity;
+import com.pucminas.tcc.services.exceptions.AuthorizationException;
 import com.pucminas.tcc.services.exceptions.DataIntegrityException;
 import com.pucminas.tcc.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class ClienteService {
+	
+	@Autowired
+	private BCryptPasswordEncoder pe;
 
 	@Autowired
 	private ClienteRepository repo;
@@ -32,8 +41,17 @@ public class ClienteService {
 	@Autowired
 	private EnderecoRepository enderecoRepository;
 	
+	@Autowired
+	private S3Service s3Service;
+		
 
 	public Cliente find(Integer id) {
+		
+		UserSecurity user = UserService.authenticated();
+		if (user==null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado!");
+		}
+		
 		Optional<Cliente> obj = repo.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Cliente não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName())
@@ -74,11 +92,18 @@ public class ClienteService {
 	}
 
 	public Cliente fromDTO(ClienteDTO objDto) {
-		return new Cliente(objDto.getId(), objDto.getNome(), objDto.getEmail(), null, null);
+		return new Cliente(objDto.getId(), objDto.getNome(), objDto.getEmail(), null, null, null);
 	}
 	
 	public Cliente fromDTO(ClienteNewDTO objDto) {
-		Cliente cli = new Cliente(null, objDto.getNome(), objDto.getEmail(), objDto.getCpfOuCnpj(), TipoCliente.toEnum(objDto.getTipo()));
+		Cliente cli = new Cliente(
+				null, 
+				objDto.getNome(), 
+				objDto.getEmail(), 
+				objDto.getCpfOuCnpj(), 
+				TipoCliente.toEnum(objDto.getTipo()), 
+				pe.encode(objDto.getSenha()));
+		
 		Cidade cid = new Cidade(objDto.getCidadeId(), null, null);
 		Endereco end = new Endereco(
 					null, 
@@ -106,6 +131,10 @@ public class ClienteService {
 	private void updateData(Cliente newObj, Cliente obj) {
 		newObj.setNome(obj.getNome());
 		newObj.setEmail(obj.getEmail());
+	}
+	
+	public URI uploadProfilePicture(MultipartFile multipartFile) {
+		return s3Service.uploadFile(multipartFile);
 	}
 	
 }

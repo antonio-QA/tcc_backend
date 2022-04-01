@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class AppstoreApplication implements CommandLineRunner {
-	
+		
 	public static void main(String[] args) {
 		SpringApplication.run(AppstoreApplication.class, args);
 	}
